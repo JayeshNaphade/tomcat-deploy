@@ -1,14 +1,20 @@
-# Use an official OpenJDK runtime as a parent image
-
 FROM tomcat:9.0
-# Set the working directory
 
+# Copy the application WAR file into the container
+COPY SampleWebApp.war /tmp/
 
-# Copy the application JAR file into the container
-COPY SampleWebApp.war /usr/local/tomcat/webapps/
+# Create a temporary directory to extract the WAR file
+WORKDIR /tmp
 
-# Expose port 8080
+# Extract the WAR file
+RUN jar -xvf SampleWebApp.war
+
+# Move the extracted content to the webapps directory
+RUN mv SampleWebApp/* /usr/local/tomcat/webapps/
+
+# Remove the temporary directory and the WAR file
+RUN rm -rf /tmp/SampleWebApp /tmp/SampleWebApp.war
+
 EXPOSE 8080
 
-# Run the application
 CMD ["catalina.sh", "run"]
