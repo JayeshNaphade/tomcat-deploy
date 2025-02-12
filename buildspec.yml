@@ -12,29 +12,38 @@ env:
 
 phases:
   install:
-  commands:
-    - echo "Installing dependencies..."
-    - apt-get update && apt-get install -y docker.io jq
-    - sudo apt update -y
-    - sudo apt upgrade -y
-    - sudo apt install unzip
-    - curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-    - unzip awscliv2.zip
-    - sudo ./aws/install
-    - for pkg in docker.io docker-doc docker-compose podman-docker containerd runc; do sudo apt-get remove $pkg; done
-    - sudo apt-get update
-    - sudo apt-get install ca-certificates curl gnupg -y
-    - sudo install -m 0755 -d /etc/apt/keyrings
-    - curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
-    - sudo chmod a+r /etc/apt/keyrings/docker.gpg
-    - echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
-    - sudo apt-get update
-    - sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin -y
-    - sudo docker run hello-world
-    - sudo curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/bin/docker-compose
-    - sudo chmod +x /usr/bin/docker-compose
-    - chmod +x add_users_to_docker_group.sh
-    - ./add_users_to_docker_group.sh
+    commands:
+      - echo "Installing dependencies..."
+      - apt-get update && apt-get install -y docker.io jq
+      - sudo apt update -y
+      - sudo apt upgrade -y
+      - sudo apt install unzip
+      - curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+      - unzip awscliv2.zip
+      - sudo ./aws/install
+      - for pkg in docker.io docker-doc docker-compose podman-docker containerd runc; do 
+          sudo apt-get remove $pkg; 
+        done
+      - sudo apt-get update
+      - sudo apt-get install ca-certificates curl gnupg -y
+      - sudo install -m 0755 -d /etc/apt/keyrings
+      - curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+      - sudo chmod a+r /etc/apt/keyrings/docker.gpg
+      - echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+      - sudo apt-get update
+      - sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin -y
+      - sudo docker run hello-world
+      - sudo curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/bin/docker-compose
+      - sudo chmod +x /usr/bin/docker-compose
+      - echo "Creating add_users_to_docker_group.sh"
+      - echo '#!/bin/bash' > add_users_to_docker_group.sh
+      - echo 'for user in /home/*; do' >> add_users_to_docker_group.sh
+      - echo '  username=$(basename "$user")' >> add_users_to_docker_group.sh
+      - echo '  sudo usermod -aG docker "$username"' >> add_users_to_docker_group.sh
+      - echo 'done' >> add_users_to_docker_group.sh
+      - chmod +x add_users_to_docker_group.sh 
+      - ./add_users_to_docker_group.sh
+
   pre_build:
     commands:
       - echo "Logging in to Amazon ECR..."
@@ -60,4 +69,3 @@ phases:
 artifacts:
   files:
     - '**/*'
-    
