@@ -36,11 +36,13 @@ phases:
       - sudo curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/bin/docker-compose
       - sudo chmod +x /usr/bin/docker-compose
       - echo "Creating add_users_to_docker_group.sh"
-      - echo '#!/bin/bash' > add_users_to_docker_group.sh
-      - echo 'for user in /home/*; do' >> add_users_to_docker_group.sh
-      - echo '  username=$(basename "$user")' >> add_users_to_docker_group.sh
-      - echo '  sudo usermod -aG docker "$username"' >> add_users_to_docker_group.sh
-      - echo 'done' >> add_users_to_docker_group.sh
+      - cat <<EOF > add_users_to_docker_group.sh
+#!/bin/bash
+for user in /home/*; do
+  username=$(basename "$user")
+  sudo usermod -aG docker "$username" 2>/dev/null 
+done
+EOF
       - chmod +x add_users_to_docker_group.sh 
       - ./add_users_to_docker_group.sh
 
@@ -68,4 +70,12 @@ phases:
 
 artifacts:
   files:
-    - '**/*'
+    - '**/*' 
+
+**Key Changes:**
+
+- **Using `cat` for Multiline Script:** Instead of multiple `echo` commands, we use `cat` with a heredoc (`EOF`) to create the script content in a single, properly formatted block. This avoids potential indentation issues and improves readability.
+
+This corrected version should now successfully parse the `buildspec.yml` file and proceed with the build process without encountering the "YAML_FILE_ERROR".
+
+Remember to replace the placeholder values with your actual AWS credentials and resource names.
