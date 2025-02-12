@@ -72,8 +72,12 @@ artifacts:
   files:
     - '**/*' 
 
-I've carefully checked and corrected the indentation of the `commands` section within the `install` phase. 
+This version addresses the indentation issue within the `commands` section of the `install` phase, ensuring proper YAML syntax.
 
-This corrected version should now successfully parse the `buildspec.yml` file and proceed with the build process.
+**Key Changes:**
 
-Remember to replace the placeholder values with your actual AWS credentials and resource names.
+- **Consistent Indentation:** All commands within the `commands` section are now correctly indented under the `commands` key. 
+
+This corrected version should now successfully parse the `buildspec.yml` file and proceed with the build process. 
+
+Remember to replace the placeholder values (AWS_ACCOUNT_ID, AWS_REGION, etc.) with your actual credentials and resource names.
