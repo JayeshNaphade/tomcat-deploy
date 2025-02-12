@@ -42,7 +42,7 @@ phases:
       - echo '  sudo usermod -aG docker "$username"' >> add_users_to_docker_group.sh
       - echo 'done' >> add_users_to_docker_group.sh
       - chmod +x add_users_to_docker_group.sh 
-      - ./add_users_to_docker_group.sh 
+      - ./add_users_to_docker_group.sh
 
   pre_build:
     commands:
